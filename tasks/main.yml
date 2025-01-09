@@ -6,7 +6,7 @@
     name: gnupg
     state: present
 - name: Add the gierens key
-  ansible.builtin.copy:
+  ansible.builtin.apt_key:
     url: https://raw.githubusercontent.com/eza-community/eza/main/deb.asc
     keyring: /etc/apt/trusted.gpg.d/gierens.gpg
 - name: Add gierens apt repo
@@ -18,3 +18,15 @@
   apt:
     name: eza
     update_cache: yes
+- name: Creates font directory
+  ansible.builtin.file:
+    path: /usr/share/fonts/truetype/JetBrainsMonoNL
+    state: directory
+- name: Copy and expand the font ZIP file
+  ansible.builtin.unarchive:
+    src: https://github.com/ryanoasis/nerd-fonts/releases/download/v3.3.0/JetBrainsMono.zip
+    dest: /usr/share/fonts/truetype/JetBrainsMonoNL
+    remote_src: yes
+    creates: /usr/share/fonts/truetype/JetBrainsMonoNL/README.md
+- name: Refresh font cache
+  ansible.builtin.command: fc-cache -f -v
