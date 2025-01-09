@@ -1,3 +1,20 @@
 #SPDX-License-Identifier: MIT-0
 ---
 # tasks file for francescm.eza
+- name: install gnupg
+  apt:
+    name: gnupg
+    state: present
+- name: Add the gierens key
+  ansible.builtin.copy:
+    url: https://raw.githubusercontent.com/eza-community/eza/main/deb.asc
+    keyring: /etc/apt/trusted.gpg.d/gierens.gpg
+- name: Add gierens apt repo
+  apt_repository:
+    repo: deb http://deb.gierens.de stable main
+    state: present
+    filename: gierens.list
+- name: Update repositories cache and install "eza"
+  apt:
+    name: eza
+    update_cache: yes
