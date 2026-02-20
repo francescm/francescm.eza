@@ -2,6 +2,7 @@ francescm.eza
 =========
 
 Install eza on debian.
+https://github.com/eza-community/eza/blob/main/INSTALL.md
 
 Requirements
 ------------
