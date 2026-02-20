@@ -1,19 +1,31 @@
 #SPDX-License-Identifier: MIT-0
 ---
 # tasks file for francescm.eza
-- name: install gnupg
-  apt:
-    name: gnupg
+- name: Instal gnupg and fontconfig packages
+  ansible.builtin.apt:
+    name: "{{ item }}"
     state: present
-- name: Add the gierens key
-  ansible.builtin.apt_key:
+    update_cache: true
+  loop:
+    - gnupg
+    - fontconfig
+- name: Install the gierens (eza) repo signing key into keyrings
+  ansible.builtin.get_url:
     url: https://raw.githubusercontent.com/eza-community/eza/main/deb.asc
-    keyring: /etc/apt/trusted.gpg.d/gierens.gpg
-- name: Add gierens apt repo
-  apt_repository:
-    repo: deb http://deb.gierens.de stable main
+    dest: /etc/apt/keyrings/gierens.asc
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Add gierens APT repo (deb822)
+  ansible.builtin.deb822_repository:
+    name: gierens
+    types: [deb]
+    uris: ["http://deb.gierens.de"]
+    suites: ["stable"]
+    components: ["main"]
+    signed_by: /etc/apt/keyrings/gierens.asc
     state: present
-    filename: gierens.list
 - name: Update repositories cache and install "eza"
   apt:
     name: eza
